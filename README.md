@@ -7,3 +7,4 @@
 todo: 
 - [ ] output file to source directory
 - [ ] select entire folders
+- [ ] limit ffmpeg cpu usage

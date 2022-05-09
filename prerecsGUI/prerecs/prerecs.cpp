@@ -59,23 +59,27 @@ void startEncode()
 
     if (globals.codec == "xvid") 
     {
-        args = " -c:v mpeg4 -vtag xvid -qscale:v 1 -qscale:a 1 -g 32 -vsync 1 -y ";
+        args = "\" -c:v mpeg4 -vtag xvid -qscale:v 1 -qscale:a 1 -g 32 -vsync 1 -y \"";
         filetype = ".avi";
     }
-    if (globals.codec == "prores")
+    else if (globals.codec == "prores")
     {
-        args = " -c:v prores_ks -profile:v 3 -c:a pcm_s16le -y ";
+        args = "\" -c:v prores_ks -profile:v 3 -c:a pcm_s16le -y \"";
         filetype = ".mov";
     }
-    if (globals.codec == "png")
+    else if (globals.codec == "png")
     {
-        args = " -y ";
+        args = "\" -y \"";
         filetype = "-%04d.png";
     }
-    if (globals.codec == "tga")
+    else if (globals.codec == "tga")
     {
-        args = " -y ";
+        args = "\" -y \"";
         filetype = "-%04d.tga";
+    }
+    else 
+    {
+        exit(1);
     }
 
     for (int i = 0; i < globals.locations.size(); i++)
@@ -88,7 +92,7 @@ void startEncode()
         
         std::string base_filename = globals.locations[i].substr(globals.locations[i].find_last_of("/\\") + 1);
         std::string temp = globals.file[i];
-        cmd = "ffmpeg -i " + globals.locations[i] + args + globals.convdir + "\\" + globals.codec + base_filename + filetype + " 2>&1";
+        cmd = "ffmpeg -i \"" + globals.locations[i] + args + globals.convdir + "\\" + globals.codec + base_filename + filetype + "\" 2>&1";
 
         globals.file[i] = base_filename + " - Started";
         globals.cnsl += exec(cmd.c_str());

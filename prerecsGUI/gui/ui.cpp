@@ -41,14 +41,15 @@ auto getTime() {
 std::string getOutput(std::string loc, std::string type) 
 {
     std::string cmdr;
+    std::string loca = "\"" + loc + "\"";
     if (type == "FPS")
-        cmdr = "ffprobe -v error -select_streams v:0 -show_entries stream=avg_frame_rate -of default=noprint_wrappers=1 " + loc + " 2>&1";
+        cmdr = "ffprobe -v error -select_streams v:0 -show_entries stream=avg_frame_rate -of default=noprint_wrappers=1 " + loca + " 2>&1";
     if (type == "LENGTH")
-        cmdr = "ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 " + loc + " 2>&1";
+        cmdr = "ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 " + loca + " 2>&1";
     if (type == "RESOL")
-        cmdr = "ffprobe -v error -select_streams v:0 -show_entries stream=height,width -of default=noprint_wrappers=1 " + loc + " 2>&1";
+        cmdr = "ffprobe -v error -select_streams v:0 -show_entries stream=height,width -of default=noprint_wrappers=1 " + loca + " 2>&1";
     if (type == "CODEC")
-        cmdr = "ffprobe -v error -select_streams v:0 -show_entries stream=codec_long_name -of default=noprint_wrappers=1 " + loc + " 2>&1";
+        cmdr = "ffprobe -v error -select_streams v:0 -show_entries stream=codec_long_name -of default=noprint_wrappers=1 " + loca + " 2>&1";
     out = exec(cmdr.c_str());
     globals.cnsl += out;
     
@@ -172,6 +173,10 @@ void ui::render()
                 {
                     std::fill(globals.file, globals.file + globals.file->size(), "");
                     globals.locations.clear();
+                    std::fill(fps, fps + 99, "");
+                    std::fill(codec, codec + 99, "");
+                    std::fill(length, length + 99, "");
+                    std::fill(resol, resol + 99, "");
                 }
                 if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Clear media queue to select new files"); }
             }

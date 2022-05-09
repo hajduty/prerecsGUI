@@ -14,7 +14,6 @@ public:
 	std::string dir;
 	std::string file[99];
 	std::string codec = "xvid";
-	int tab = 2;
 	std::string convdir;
 	std::string cnsl;
 
@@ -22,6 +21,7 @@ public:
 	std::vector<std::string> locations = {};
 	char fname[128];
 	ImFont* arialBig;
+	ImFont* arial;
 };
 
 inline c_globals globals;

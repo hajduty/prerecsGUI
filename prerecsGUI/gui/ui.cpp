@@ -70,7 +70,7 @@ std::string getAppdata()
 void ui::createDir()
 {
     globals.appdata = getAppdata();
-    globals.appdata += "\\proresGUI";
+    globals.appdata += "\\prerecsGUI";
     globals.dir = globals.appdata;
     strcpy(globals.fname, globals.dir.c_str());
 }
@@ -154,6 +154,7 @@ void ui::render()
             {
                 if (ImGui::Button("LOAD FILES", {150,74}))
                     globals.fileDialog.Open();
+                if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Load your media files"); }
             }
             ImGui::SetCursorPos({ 150,25 }); 
             {
@@ -162,6 +163,7 @@ void ui::render()
                     _mkdir(globals.appdata.c_str());
                     ShellExecuteA(NULL, "open", globals.appdata.c_str(), NULL, NULL, SW_SHOWDEFAULT);
                 }
+                if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Open output directory"); }
             }
 
             ImGui::SetCursorPos({ 250,25 }); 
@@ -171,6 +173,7 @@ void ui::render()
                     std::fill(globals.file, globals.file + globals.file->size(), "");
                     globals.locations.clear();
                 }
+                if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Clear media queue to select new files"); }
             }
             ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.f);
             {
@@ -179,6 +182,8 @@ void ui::render()
                     ImGui::PushItemWidth(400);
                     ImGui::InputText("", globals.fname, IM_ARRAYSIZE(globals.fname));
                     ImGui::PopItemWidth();
+                    if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Output directory"); }
+
                 }
                 ImGui::SetCursorPos({ 0,120 });
                 ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4({ 0.0f, 0.0f, 0.0f, 0.25f }));
@@ -212,6 +217,9 @@ void ui::render()
                                                 }
                                             }
                                         }
+                                        ImGui::PushFont(globals.arial);
+                                        if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Will export a .avi mediafile"); }
+                                        ImGui::PopFont();
                                     }
                                     // PRORES Button
                                     ImGui::SetCursorPos({ 120,20 });
@@ -234,13 +242,15 @@ void ui::render()
                                                 }
                                             }
                                         }
+                                        ImGui::PushFont(globals.arial);
+                                        if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Will export a .mov mediafile"); }
+                                        ImGui::PopFont();
                                     }
 
                                     // PNG Button
                                     ImGui::SetCursorPos({ 235,20 });
                                     {
                                         if (ImGui::Button("  ", { 45,35 })) globals.codec = "png";
-
                                         {
                                             ImGui::SetCursorPos({ 235, 25 });
                                             {
@@ -257,13 +267,15 @@ void ui::render()
                                                 }
                                             }
                                         }
+                                        ImGui::PushFont(globals.arial);
+                                        if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Will export a png sequence"); }
+                                        ImGui::PopFont();
                                     }
 
                                     // TGA Button
                                     ImGui::SetCursorPos({ 320,20 });
                                     {
                                         if (ImGui::Button("   ", { 40,30 })) globals.codec = "tga";
-
                                         {
                                             ImGui::SetCursorPos({ 320, 25 });
                                             {
@@ -280,6 +292,9 @@ void ui::render()
                                                 }
                                             }
                                         }
+                                        ImGui::PushFont(globals.arial);
+                                        if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Will export a tga sequence"); }
+                                        ImGui::PopFont();
                                     }
                                 }
                                 ImGui::PopStyleColor(3);
@@ -297,7 +312,6 @@ void ui::render()
             {
                 if (ImGui::Button(globals.startBtn.c_str(), { 400,40.f })) 
                 {
-
                     if (!globals.start) 
                     {
                         globals.startBtn = "START";
@@ -319,6 +333,8 @@ void ui::render()
                     }
                     globals.start = !globals.start;
                 }
+                ImGui::PushFont(globals.arial);
+                if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Start converting queue"); }
             }
 
             ImGui::EndChild();

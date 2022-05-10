@@ -6,6 +6,8 @@
 #include <stdexcept>
 #include <string>
 #include <array>
+#include <filesystem>
+#include <utility>
 
 std::string subFolderPath;
 
@@ -25,6 +27,7 @@ std::string exec(const char* cmd)
 
     std::array<char, 128> buffer;
     std::string result;
+
     auto pipe = _popen(cmd, "r");
 
     if (!pipe) throw std::runtime_error("popen() failed!");
@@ -84,16 +87,17 @@ void startEncode()
 
     for (int i = 0; i < globals.locations.size(); i++)
     {
+        std::string base_filename = globals.locations[i].substr(globals.locations[i].find_last_of("/\\") + 1);
+        std::string temp = globals.file[i];
+        std::filesystem::path p = base_filename;
+
         if (globals.stopEncode) 
         {
             globals.stopEncode = false;
             break;
         }
-        
-        std::string base_filename = globals.locations[i].substr(globals.locations[i].find_last_of("/\\") + 1);
-        std::string temp = globals.file[i];
-        cmd = "ffmpeg -i \"" + globals.locations[i] + args + globals.convdir + "\\" + globals.codec + base_filename + filetype + "\" 2>&1";
 
+        cmd = "ffmpeg -i \"" + globals.locations[i] + args + globals.convdir + "\\" + globals.codec + "_" + p.replace_extension().u8string() + filetype + "\" 2>&1";
         globals.file[i] = base_filename + " - Started";
         globals.cnsl += exec(cmd.c_str());
         globals.file[i] = base_filename + " Finished";

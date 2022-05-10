@@ -17,11 +17,14 @@ public:
 	std::string convdir;
 	std::string cnsl;
 
+	int startOption;
+
 	ImGui::FileBrowser fileDialog = ImGui::FileBrowser(ImGuiFileBrowserFlags_MultipleSelection);
 	std::vector<std::string> locations = {};
 	char fname[128];
 	ImFont* arialBig;
 	ImFont* arial;
+	ImFont* bigIcon;
 };
 
 inline c_globals globals;

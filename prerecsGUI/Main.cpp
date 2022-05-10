@@ -3,6 +3,9 @@
 #include "globals.h"
 #include "imgui/imfilebrowser.h"
 #include "imgui/helvetica.h"
+#include "font/IconsForkAwesome.h"
+#include "font/forkawesome-webfont.h"
+
 
 int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
@@ -33,8 +36,20 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
     io.IniFilename = nullptr; //crutial for not leaving the imgui.ini file
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable Multi-Viewport / Platform Windows
 
+    ImFontConfig config;
+    config.MergeMode = true;
+
+    static const ImWchar icon_ranges[] = { ICON_MIN_FK, ICON_MAX_FK, 0 };
+    //io.Fonts->AddFontFromFileTTF("fonts/fontawesome-webfont.ttf", 13.0f, &config, icon_ranges);
+
     globals.arial = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\Arial.ttf", 14.5);
+    io.Fonts->AddFontFromMemoryCompressedTTF(font_compressed_data, font_compressed_size, 15.0f, &config, icon_ranges);
+
     globals.arialBig = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\Arial.ttf", 20.5);
+    io.Fonts->AddFontFromMemoryCompressedTTF(font_compressed_data, font_compressed_size, 20.f, &config, icon_ranges);
+
+    globals.bigIcon = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\Arial.ttf", 60.5);
+    io.Fonts->AddFontFromMemoryCompressedTTF(font_compressed_data, font_compressed_size, 60.f, &config, icon_ranges);
 
     // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
     ImGuiStyle& style = ImGui::GetStyle();

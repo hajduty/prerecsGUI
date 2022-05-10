@@ -168,6 +168,8 @@
     <ClCompile Include="gui\ui.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="font\forkawesome-webfont.h" />
+    <ClInclude Include="font\IconsForkAwesome.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="imgui\helvetica.h" />
     <ClInclude Include="imgui\imconfig.h" />

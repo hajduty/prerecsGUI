@@ -5,6 +5,7 @@
 #include "../imgui/imgui_internal.h"
 #include "../imgui/imfilebrowser.h"
 #include "../prerecs/prerecs.h"
+#include "../font/IconsForkAwesome.h"
 #include <chrono>
 #include <filesystem>
 #include <direct.h>
@@ -44,11 +45,11 @@ std::string getOutput(std::string loc, std::string type)
     std::string loca = "\"" + loc + "\"";
     if (type == "FPS")
         cmdr = "ffprobe -v error -select_streams v:0 -show_entries stream=avg_frame_rate -of default=noprint_wrappers=1 " + loca + " 2>&1";
-    if (type == "LENGTH")
+    else if (type == "LENGTH")
         cmdr = "ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 " + loca + " 2>&1";
-    if (type == "RESOL")
+    else if (type == "RESOL")
         cmdr = "ffprobe -v error -select_streams v:0 -show_entries stream=height,width -of default=noprint_wrappers=1 " + loca + " 2>&1";
-    if (type == "CODEC")
+    else if (type == "CODEC")
         cmdr = "ffprobe -v error -select_streams v:0 -show_entries stream=codec_long_name -of default=noprint_wrappers=1 " + loca + " 2>&1";
     out = exec(cmdr.c_str());
     globals.cnsl += out;
@@ -76,6 +77,14 @@ void ui::createDir()
     strcpy(globals.fname, globals.dir.c_str());
 }
 
+void ui::startModal() {
+
+}
+
+int firstOpen = 1;
+
+int e = 1;
+
 void ui::render() 
 {
     if (!globals.active) return;
@@ -89,8 +98,80 @@ void ui::render()
     temp = globals.fname;
     globals.appdata = temp;
 
+
+
     ImGui::Begin(window_title, &globals.active, window_flags);
     {
+        if (firstOpen) {
+            ImGui::SetNextWindowPos(ImVec2(1920/2.3, 1080/ 2.3), ImGuiCond_Once); // only center on 1920p displays atm
+            ImGui::SetNextWindowSize(ImVec2(300, 150));
+            ImGui::OpenPopup("Source Selection");
+            firstOpen = 0;
+        }
+
+        if (ImGui::BeginPopupModal("Source Selection", NULL, ImGuiWindowFlags_NoDecoration))
+        {
+
+            static ImVec4 fileText = ImVec4(0.15, 0.15, 0.15, 1);
+            static ImVec4 folderText = ImVec4(0.15, 0.15, 0.15, 1);
+
+            ImGui::SetCursorPos({ 100,5 });
+            ImGui::Text("Source Selection");
+            ImGui::Separator();
+            ImGui::PushFont(globals.bigIcon);
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 0.5));
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
+            {
+                ImGui::SetCursorPos({ 0,45 });
+                {
+                    ImGui::PushStyleColor(ImGuiCol_Text, folderText);
+
+                    if (ImGui::Button(ICON_FK_FOLDER_OPEN"", { 150,65 })) {
+                        globals.startOption = 2;
+                        ImGui::CloseCurrentPopup();
+                    }
+                    
+                    if (ImGui::IsItemHovered()) {
+                        folderText = ImVec4(1, 0.25, 0.25, 1);
+                        ImGui::PushFont(globals.arial);
+                        ImGui::SetTooltip("Select folders containing media files");
+                        ImGui::PopFont();
+                    }
+                    else {
+                        folderText = ImVec4(0.25, 0.25, 0.25, 1);
+                    }
+                    ImGui::PopStyleColor();
+                }
+                ImGui::SetCursorPos({ 150,45 });
+                {
+                    ImGui::PushStyleColor(ImGuiCol_Text, fileText);
+
+                    if (ImGui::Button(ICON_FK_FILE"", { 150,65 })) {
+                        globals.startOption = 1;
+                        ImGui::CloseCurrentPopup();
+                    }
+
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::PushFont(globals.arial);
+                        ImGui::SetTooltip("Select individual media files");
+                        ImGui::PopFont();
+                        fileText = ImVec4(1, 0.25, 0.25, 1);
+                    }
+                    else {
+                        fileText = ImVec4(0.25, 0.25, 0.25, 1);
+                    }
+                    ImGui::PopStyleColor();
+                }
+            }
+            ImGui::PopStyleColor(3);
+
+            ImGui::PopFont();
+            ImGui::Spacing();
+      
+            ImGui::EndPopup();
+        }
+
         ImGui::SetCursorPos({ 20,35 });
         if (ImGui::BeginChild("##Queue", ImVec2(140,430))) 
         {

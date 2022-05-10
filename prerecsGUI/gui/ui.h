@@ -6,6 +6,7 @@ namespace ui {
 	void init(LPDIRECT3DDEVICE9);
 	void render();
 	void createDir();
+	void startModal();
 }
 
 namespace ui {

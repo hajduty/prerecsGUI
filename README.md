@@ -6,5 +6,5 @@
 
 todo: 
 - [ ] output file to source directory
-- [ ] select entire folders
+- [x] select entire folders
 - [ ] limit ffmpeg cpu usage

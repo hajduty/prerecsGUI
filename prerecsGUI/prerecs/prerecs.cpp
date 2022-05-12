@@ -20,7 +20,7 @@ std::string exec(const char* cmd)
     std::string::size_type pos = std::string(moduleFilePath).rfind("\\");
 
     // Replace the program name by your sub-folder.
-    subFolderPath = std::string(moduleFilePath).substr(0, pos) + "\\XST\\Files";
+    subFolderPath = std::string(moduleFilePath).substr(0, pos);
 
     // Change into the sub-folder relative to your program.
     SetCurrentDirectory(subFolderPath.c_str());

@@ -64,5 +64,5 @@ void ModernDarkTheme()
 	colors[ImGuiCol_NavHighlight] = { 0.51f, 0.65f, 0.60f, 1.00f };
 	colors[ImGuiCol_NavWindowingHighlight] = { 1.00f, 1.00f, 1.00f, 0.70f };
 	colors[ImGuiCol_NavWindowingDimBg] = { 0.80f, 0.80f, 0.80f, 0.20f };
-	colors[ImGuiCol_ModalWindowDimBg] = { 0.15f, 0.15f, 0.15f, 0.35f };
+	colors[ImGuiCol_ModalWindowDimBg] = { 0, 0, 0, 0.50f };
 }

@@ -32,6 +32,9 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
     globals.fileDialog.SetTitle("Select files");
     globals.fileDialog.SetTypeFilters({ ".mp4", ".mp4" });
 
+    globals.folderDialog.SetTitle("Select files");
+    globals.folderDialog.SetTypeFilters({ "" });
+
     ImGuiIO& io = ImGui::GetIO();
     io.IniFilename = nullptr; //crutial for not leaving the imgui.ini file
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable Multi-Viewport / Platform Windows

@@ -21,7 +21,6 @@
 #include <cstring>
 #include <cctype>
 
-int t = 1;
 std::string date;
 std::string out = "";
 std::string fps[99];
@@ -29,6 +28,7 @@ std::string length[99];
 std::string resol[99];
 std::string codec[99];
 std::string temp;
+int firstOpen = 1;
 
 auto getTime() {
     std::time_t t = std::time(0);
@@ -77,14 +77,6 @@ void ui::createDir()
     strcpy(globals.fname, globals.dir.c_str());
 }
 
-void ui::startModal() {
-
-}
-
-int firstOpen = 1;
-
-int e = 1;
-
 void ui::render() 
 {
     if (!globals.active) return;
@@ -97,8 +89,6 @@ void ui::render()
 
     temp = globals.fname;
     globals.appdata = temp;
-
-
 
     ImGui::Begin(window_title, &globals.active, window_flags);
     {
@@ -234,8 +224,12 @@ void ui::render()
 
             ImGui::SetCursorPos({ 0,25 });
             {
-                if (ImGui::Button("LOAD FILES", {150,74}))
-                    globals.fileDialog.Open();
+                if (ImGui::Button("LOAD FILES", { 150,74 })) {
+                    if (globals.startOption == 1)
+                        globals.fileDialog.Open();
+                    else
+                        globals.folderDialog.Open();
+                }
                 if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Load your media files"); }
             }
             ImGui::SetCursorPos({ 150,25 }); 
@@ -419,7 +413,6 @@ void ui::render()
                     }
                     globals.start = !globals.start;
                 }
-                ImGui::PushFont(globals.arial);
                 if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Start converting queue"); }
             }
 
@@ -455,7 +448,22 @@ void ui::render()
 
         }
 
+        if (globals.folderDialog.HasSelected())
+        {
+            std::string path = globals.folderDialog.GetSelected().u8string();
+
+            for (const auto& file : std::filesystem::directory_iterator(path))
+            {
+                globals.locations.push_back(file.path().u8string());
+            }
+
+            globals.folderDialog.ClearSelected();
+        }
+
         globals.fileDialog.Display();
+
+        globals.folderDialog.Display();
+        //ImGui::PopFont();
     }
     ImGui::End();
 }

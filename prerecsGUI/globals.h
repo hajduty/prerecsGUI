@@ -16,10 +16,9 @@ public:
 	std::string codec = "xvid";
 	std::string convdir;
 	std::string cnsl;
-
 	int startOption;
-
 	ImGui::FileBrowser fileDialog = ImGui::FileBrowser(ImGuiFileBrowserFlags_MultipleSelection);
+	ImGui::FileBrowser folderDialog = ImGui::FileBrowser(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_MultipleSelection);
 	std::vector<std::string> locations = {};
 	char fname[128];
 	ImFont* arialBig;

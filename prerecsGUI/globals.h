@@ -8,19 +8,21 @@ public:
 	bool active = true;
 	bool stopEncode = false;
 	bool start = true;
+	int startOption = 3;
+	char fname[128];
 
+	std::vector<std::string> locations = {};
+	std::string locationsDisplay[99];
 	std::string startBtn = "START";
+	std::string codec = "xvid";
 	std::string appdata;
 	std::string dir;
-	std::string file[99];
-	std::string codec = "xvid";
 	std::string convdir;
 	std::string cnsl;
-	int startOption;
+
 	ImGui::FileBrowser fileDialog = ImGui::FileBrowser(ImGuiFileBrowserFlags_MultipleSelection);
 	ImGui::FileBrowser folderDialog = ImGui::FileBrowser(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_MultipleSelection);
-	std::vector<std::string> locations = {};
-	char fname[128];
+
 	ImFont* arialBig;
 	ImFont* arial;
 	ImFont* bigIcon;

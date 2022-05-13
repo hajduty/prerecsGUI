@@ -21,14 +21,7 @@
 #include <cstring>
 #include <cctype>
 
-std::string date;
-std::string out = "";
-std::string fps[99];
-std::string length[99];
-std::string resol[99];
-std::string codec[99];
 std::string temp;
-int firstOpen = 1;
 
 auto getTime() {
     std::time_t t = std::time(0);
@@ -37,24 +30,6 @@ auto getTime() {
     da << now->tm_yday << "_" << globals.codec;
     std::cout << da.str();
     return da;
-}
-
-std::string getOutput(std::string loc, std::string type) 
-{
-    std::string cmdr;
-    std::string loca = "\"" + loc + "\"";
-    if (type == "FPS")
-        cmdr = "ffprobe -v error -select_streams v:0 -show_entries stream=avg_frame_rate -of default=noprint_wrappers=1 " + loca + " 2>&1";
-    else if (type == "LENGTH")
-        cmdr = "ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 " + loca + " 2>&1";
-    else if (type == "RESOL")
-        cmdr = "ffprobe -v error -select_streams v:0 -show_entries stream=height,width -of default=noprint_wrappers=1 " + loca + " 2>&1";
-    else if (type == "CODEC")
-        cmdr = "ffprobe -v error -select_streams v:0 -show_entries stream=codec_long_name -of default=noprint_wrappers=1 " + loca + " 2>&1";
-    out = exec(cmdr.c_str());
-    globals.cnsl += out;
-    
-    return out;
 }
 
 std::string getAppdata() 
@@ -92,11 +67,10 @@ void ui::render()
 
     ImGui::Begin(window_title, &globals.active, window_flags);
     {
-        if (firstOpen) {
+        if (globals.startOption == 3) {
             ImGui::SetNextWindowPos(ImVec2(1920/2.3, 1080/ 2.3), ImGuiCond_Once); // only center on 1920p displays atm
             ImGui::SetNextWindowSize(ImVec2(300, 150));
             ImGui::OpenPopup("Source Selection");
-            firstOpen = 0;
         }
 
         if (ImGui::BeginPopupModal("Source Selection", NULL, ImGuiWindowFlags_NoDecoration))
@@ -173,42 +147,17 @@ void ui::render()
 
                 for (int i = 0; i < globals.locations.size(); i++)
                 {
-                    if (globals.file[i] == "")
-                        globals.file[i] = globals.locations[i].substr(globals.locations[i].find_last_of("/\\") + 1);
+                    if (globals.locationsDisplay[i] == "")
+                        globals.locationsDisplay[i] = globals.locations[i].substr(globals.locations[i].find_last_of("/\\") + 1);
 
-                    std::string filename = globals.locations.at(i).substr(globals.locations[i].find_last_of("/\\") + 1);
+                    ImGui::Text(globals.locationsDisplay[i].c_str());
 
-                    ImGui::Text(globals.file[i].c_str());
-
-                    if (ImGui::IsItemHovered())
+                    if (ImGui::IsItemHovered()) 
                     {
-                        ImGui::BeginTooltip();
-                        std::string l = "time: " + length[i];
-                        ImGui::TextUnformatted(globals.file[i].c_str());
-
-                        if (fps[i] == "")
-                            fps[i] = getOutput(globals.locations[i], "FPS");
-                        else
-                            ImGui::TextUnformatted(fps[i].c_str());
-
-                        if (length[i] == "")
-                            length[i] = getOutput(globals.locations[i], "LENGTH");
-                        else
-                            ImGui::TextUnformatted(l.c_str());
-
-                        if (resol[i] == "")
-                            resol[i] = getOutput(globals.locations[i], "RESOL");
-                        else
-                            ImGui::TextUnformatted(resol[i].c_str());
-
-                        if (codec[i] != "")
-                            codec[i] = getOutput(globals.locations[i], "CODEC");
-                        else
-                            ImGui::TextUnformatted(codec[i].c_str());
-
-                        ImGui::EndTooltip();
+                        ImGui::SetTooltip(globals.locations.at(i).c_str());
                     }
                 }
+                
             }
             ImGui::EndChild();
         }
@@ -246,12 +195,8 @@ void ui::render()
             {
                 if (ImGui::Button("CLEAR QUEUE", {150,74}))
                 {
-                    std::fill(globals.file, globals.file + globals.file->size(), "");
+                    std::fill(globals.locationsDisplay, globals.locationsDisplay + globals.locationsDisplay->size(), "");
                     globals.locations.clear();
-                    std::fill(fps, fps + 99, "");
-                    std::fill(codec, codec + 99, "");
-                    std::fill(length, length + 99, "");
-                    std::fill(resol, resol + 99, "");
                 }
                 if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Clear media queue to select new files"); }
             }

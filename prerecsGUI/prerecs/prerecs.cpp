@@ -88,7 +88,7 @@ void startEncode()
     for (int i = 0; i < globals.locations.size(); i++)
     {
         std::string base_filename = globals.locations[i].substr(globals.locations[i].find_last_of("/\\") + 1);
-        std::string temp = globals.file[i];
+        std::string temp = globals.locationsDisplay[i];
         std::filesystem::path p = base_filename;
 
         if (globals.stopEncode) 
@@ -98,9 +98,9 @@ void startEncode()
         }
 
         cmd = "ffmpeg -i \"" + globals.locations[i] + args + globals.convdir + "\\" + globals.codec + "_" + p.replace_extension().u8string() + filetype + "\" 2>&1";
-        globals.file[i] = base_filename + " - Started";
+        globals.locationsDisplay[i] = base_filename + " - Started";
         globals.cnsl += exec(cmd.c_str());
-        globals.file[i] = base_filename + " Finished";
+        globals.locationsDisplay[i] = base_filename + " Finished";
     }
     globals.startBtn = "Start";
     globals.start = true;

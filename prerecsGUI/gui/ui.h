@@ -10,7 +10,7 @@ namespace ui {
 
 namespace ui {
 	inline LPDIRECT3DDEVICE9 dev;
-	inline const char* window_title = "prerecsGUI v.0.1";
+	inline const char* window_title = "prerecsGUI v.0.2";
 }
 
 namespace ui {

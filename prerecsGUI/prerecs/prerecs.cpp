@@ -8,6 +8,7 @@
 #include <array>
 #include <filesystem>
 #include <utility>
+#include <direct.h>
 
 std::string subFolderPath;
 
@@ -97,10 +98,25 @@ void startEncode()
             break;
         }
 
-        cmd = "ffmpeg -i \"" + globals.locations[i] + args + globals.convdir + "\\" + globals.codec + "_" + p.replace_extension().u8string() + filetype + "\" 2>&1";
-        globals.locationsDisplay[i] = base_filename + " - Started";
-        globals.cnsl += exec(cmd.c_str());
-        globals.locationsDisplay[i] = base_filename + " Finished";
+        if (globals.codec == "png" | globals.codec == "tga")
+        {
+            std::string pngPath = globals.convdir + "\\" + p.replace_extension().u8string();
+            _mkdir(pngPath.c_str());
+            std::cout << pngPath;
+            std::cout << "\n";
+            cmd = "ffmpeg -i \"" + globals.locations[i] + args + pngPath + "\\" + globals.codec + "_" + p.replace_extension().u8string() + filetype + "\" 2>&1";
+            std::cout << cmd;
+            globals.locationsDisplay[i] = base_filename + " - Started";
+            globals.cnsl += exec(cmd.c_str());
+            globals.locationsDisplay[i] = base_filename + " Finished";
+        }
+        else 
+        {
+            cmd = "ffmpeg -i \"" + globals.locations[i] + args + globals.convdir + "\\" + globals.codec + "_" + p.replace_extension().u8string() + filetype + "\" 2>&1";
+            globals.locationsDisplay[i] = base_filename + " - Started";
+            globals.cnsl += exec(cmd.c_str());
+            globals.locationsDisplay[i] = base_filename + " Finished";
+        }
     }
     globals.startBtn = "Start";
     globals.start = true;

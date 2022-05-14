@@ -2,7 +2,7 @@
 
 *gui version of https://github.com/gmzorz/prerecs*
 
-![image](https://user-images.githubusercontent.com/60933760/167486649-aa8fb8f5-ef6b-4b91-b420-4c8af91a0657.png)
+![image](https://user-images.githubusercontent.com/60933760/168450322-cfe5cd47-b6a7-4e99-ae39-c6eb8e277eae.png)
 
 features:
 - creates new folder for each video when exporting as png

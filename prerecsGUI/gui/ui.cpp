@@ -137,7 +137,7 @@ void ui::render()
         }
 
         ImGui::SetCursorPos({ 20,35 });
-        if (ImGui::BeginChild("##Queue", ImVec2(140,430))) 
+        if (ImGui::BeginChild("##Queue", ImVec2(140,380))) 
         {
             std::string que = "Queue " + std::to_string(globals.locations.size());
             ImGui::SetCursorPos({ 5.f, 5.f });
@@ -161,6 +161,33 @@ void ui::render()
             }
             ImGui::EndChild();
         }
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.11f, 0.11f, 0.11f, 1.00f));
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0.25, 0.25, 1));
+        ImGui::PushFont(globals.arialBig);
+        {
+            ImGui::SetCursorPos({ 22,435 });
+            {
+                if (ImGui::Button(ICON_FK_COGS"", { 30,30 }))
+                    globals.startOption = 3;
+            }
+            ImGui::SetCursorPos({ 57, 435 });
+            {
+                if (ImGui::Button(ICON_FK_FILTER"", { 30,30 }));
+                // Insert custom ffmpeg args 
+            }
+            ImGui::SetCursorPos({ 92, 435 });
+            {
+                if (ImGui::Button(ICON_FK_FILE"", { 30,30 }));
+                    // Select config (Output directory, custom ffmpeg args
+            }
+            ImGui::SetCursorPos({ 127, 435 });
+            {
+                if (ImGui::Button(ICON_FK_INFO"", { 30,30 }));
+                // Info
+            }
+        }
+        ImGui::PopFont();
+        ImGui::PopStyleColor(2);
 
         ImGui::SetCursorPos({ 180,35 });
         if (ImGui::BeginChild("##Controls", ImVec2(400, 240))) 
@@ -205,9 +232,9 @@ void ui::render()
                 ImGui::SetCursorPos({ 0,99 });
                 {
                     ImGui::PushItemWidth(400);
-                    ImGui::InputText("", globals.fname, IM_ARRAYSIZE(globals.fname));
+                    ImGui::InputText("###", globals.fname, IM_ARRAYSIZE(globals.fname));
                     ImGui::PopItemWidth();
-                    if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Output directory"); }
+                    if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Output directory (If empty, will output converted files in a new folder in source directory)"); }
 
                 }
                 ImGui::SetCursorPos({ 0,120 });

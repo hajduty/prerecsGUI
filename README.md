@@ -9,5 +9,5 @@ features:
 - ability to select entire folder to scan for video files
 
 todo: 
-- [ ] output file to source directory
+- [x] output file to source directory
 - [ ] limit ffmpeg cpu usage

@@ -58,33 +58,6 @@ void startEncode()
     SetCurrentDirectory(subFolderPath.c_str());
 
     std::string cmd;
-    std::string args;
-    std::string filetype;
-
-    if (globals.codec == "xvid") 
-    {
-        args = "\" -c:v mpeg4 -vtag xvid -qscale:v 1 -qscale:a 1 -g 32 -vsync 1 -y \"";
-        filetype = ".avi";
-    }
-    else if (globals.codec == "prores")
-    {
-        args = "\" -c:v prores_ks -profile:v 3 -c:a pcm_s16le -y \"";
-        filetype = ".mov";
-    }
-    else if (globals.codec == "png")
-    {
-        args = "\" -y \"";
-        filetype = "-%04d.png";
-    }
-    else if (globals.codec == "tga")
-    {
-        args = "\" -y \"";
-        filetype = "-%04d.tga";
-    }
-    else 
-    {
-        exit(1);
-    }
 
     for (int i = 0; i < globals.locations.size(); i++)
     {
@@ -104,7 +77,7 @@ void startEncode()
             {
                 std::string pngPath = globals.convdir + "\\" + p.replace_extension().u8string();
                 _mkdir(pngPath.c_str());
-                cmd = "ffmpeg -i \"" + globals.locations[i] + args + pngPath + "\\" + globals.codec + "_" + p.replace_extension().u8string() + filetype + "\" 2>&1";
+                cmd = "ffmpeg -i \"" + globals.locations[i] + globals.args + pngPath + "\\" + globals.codec + "_" + p.replace_extension().u8string() + globals.filetype + "\" 2>&1";
             }
             else 
             {
@@ -112,21 +85,21 @@ void startEncode()
                 std::string sourcePath = sp.replace_extension().u8string();
                 std::cout << "\n" << sourcePath << "\n";
                 _mkdir(sourcePath.c_str());
-                cmd = "ffmpeg -i \"" + globals.locations[i] + args + sourcePath + "\\" + globals.codec + "_" + p.replace_extension().u8string() + filetype + "\" 2>&1";
+                cmd = "ffmpeg -i \"" + globals.locations[i] + globals.args + sourcePath + "\\" + globals.codec + "_" + p.replace_extension().u8string() + globals.filetype + "\" 2>&1";
             }
         }
         else 
         {
             if (!globals.fname[0] == '\0')
             {
-                cmd = "ffmpeg -i \"" + globals.locations[i] + args + globals.convdir + "\\" + globals.codec + "_" + p.replace_extension().u8string() + filetype + "\" 2>&1";
+                cmd = "ffmpeg -i \"" + globals.locations[i] + globals.args + globals.convdir + "\\" + globals.codec + "_" + p.replace_extension().u8string() + globals.filetype + "\" 2>&1";
             }
             else
             {
                 std::filesystem::path sp = globals.locations[i];
                 std::string sourcePath = sp.replace_extension().u8string();
                 _mkdir(sourcePath.c_str());
-                cmd = "ffmpeg -i \"" + globals.locations[i] + args + sourcePath + "\\" + globals.codec + "_" + p.replace_extension().u8string() + filetype + "\" 2>&1";
+                cmd = "ffmpeg -i \"" + globals.locations[i] + globals.args + sourcePath + "\\" + globals.codec + "_" + p.replace_extension().u8string() + globals.filetype + "\" 2>&1";
             }
         }
         globals.locationsDisplay[i] = base_filename + " - Started";

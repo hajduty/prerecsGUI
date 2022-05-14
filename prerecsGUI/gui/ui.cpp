@@ -21,8 +21,6 @@
 #include <cstring>
 #include <cctype>
 
-std::string temp;
-
 auto getTime() {
     std::time_t t = std::time(0);
     std::tm* now = std::localtime(&t);
@@ -52,9 +50,32 @@ void ui::createDir()
     strcpy(globals.fname, globals.dir.c_str());
 }
 
+static void showArgs(bool* p_open)
+{
+    ImGui::SetNextWindowSize({ 450.f,80 });
+
+    if (ImGui::Begin("FFmpeg Args", p_open, ImGuiWindowFlags_NoResize))
+    {
+        ImGui::SetCursorPos({ 0,40 });
+        {
+            ImGui::PushItemWidth(450);
+
+            if (globals.argsDisplay[0] == '\0');
+                strcpy(globals.argsDisplay, globals.args.c_str());
+
+            ImGui::InputText("####", globals.argsDisplay, IM_ARRAYSIZE(globals.argsDisplay));
+            globals.args = globals.argsDisplay;
+            globals.args;
+            ImGui::PopItemWidth();
+        }
+    }
+    ImGui::End();
+}
+
 void ui::render() 
 {
-    if (!globals.active) return;
+    if (!globals.active) 
+        return;
 
     ImGui::SetNextWindowPos(ImVec2(window_pos.x, window_pos.y), ImGuiCond_Once);
     ImGui::SetNextWindowSize(ImVec2(window_size.x, window_size.y));
@@ -62,8 +83,11 @@ void ui::render()
 
     ImGuiStyle* style = &ImGui::GetStyle();
 
-    temp = globals.fname;
-    globals.appdata = temp;
+    ui::temp = globals.fname;
+    globals.appdata = ui::temp;
+
+    if (ui::argsOpen)
+        showArgs(&ui::argsOpen);
 
     ImGui::Begin(window_title, &globals.active, window_flags);
     {
@@ -172,13 +196,16 @@ void ui::render()
             }
             ImGui::SetCursorPos({ 57, 435 });
             {
-                if (ImGui::Button(ICON_FK_FILTER"", { 30,30 }));
+                if (ImGui::Button(ICON_FK_FILTER"", { 30,30 })) 
+                {
+                    ui::argsOpen = !ui::argsOpen;
+                }
                 // Insert custom ffmpeg args 
             }
             ImGui::SetCursorPos({ 92, 435 });
             {
                 if (ImGui::Button(ICON_FK_FILE"", { 30,30 }));
-                    // Select config (Output directory, custom ffmpeg args
+                    // Select config (Output directory, custom ffmpeg args)
             }
             ImGui::SetCursorPos({ 127, 435 });
             {
@@ -252,23 +279,28 @@ void ui::render()
                                     // XVID Button
                                     ImGui::SetCursorPos({ 40,20 });
                                     {
-                                        if (ImGui::Button("", { 40,40 })) globals.codec = "xvid";
+                                        if (ImGui::Button("", { 40,40 }))
                                         {
-                                            ImGui::SetCursorPos({ 40, 25 });
+                                            globals.codec = "xvid";
+                                            globals.args = "\" -c:v mpeg4 -vtag xvid -qscale:v 1 -qscale:a 1 -g 32 -vsync 1 -y \"";
+                                            globals.filetype = ".avi";
+                                        }
+                                        
+                                        ImGui::SetCursorPos({ 40, 25 });
+                                        {
+                                            if (globals.codec != "xvid")
                                             {
-                                                if (globals.codec != "xvid")
-                                                {
-                                                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 0.20));
-                                                    ImGui::Text("XVID");
-                                                    ImGui::PopStyleColor();
-                                                }
-                                                else {
-                                                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0.25, 0.25, 1));
-                                                    ImGui::Text("XVID");
-                                                    ImGui::PopStyleColor();
-                                                }
+                                                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 0.20));
+                                                ImGui::Text("XVID");
+                                                ImGui::PopStyleColor();
+                                            }
+                                            else {
+                                                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0.25, 0.25, 1));
+                                                ImGui::Text("XVID");
+                                                ImGui::PopStyleColor();
                                             }
                                         }
+                                        
                                         ImGui::PushFont(globals.arial);
                                         if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Will export a .avi mediafile"); }
                                         ImGui::PopFont();
@@ -276,24 +308,28 @@ void ui::render()
                                     // PRORES Button
                                     ImGui::SetCursorPos({ 120,20 });
                                     {
-                                        if (ImGui::Button(" ", { 75,35 })) globals.codec = "prores";
-
+                                        if (ImGui::Button(" ", { 75,35 })) 
                                         {
-                                            ImGui::SetCursorPos({ 120, 25 });
+                                            globals.codec = "prores";
+                                            globals.args = "\" -c:v prores_ks -profile:v 3 -c:a pcm_s16le -y \"";
+                                            globals.filetype = ".mov";
+                                        }
+
+                                        ImGui::SetCursorPos({ 120, 25 });
+                                        {
+                                            if (globals.codec != "prores")
                                             {
-                                                if (globals.codec != "prores")
-                                                {
-                                                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 0.20));
-                                                    ImGui::Text("PRORES");
-                                                    ImGui::PopStyleColor();
-                                                }
-                                                else {
-                                                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0.25, 0.25, 1));
-                                                    ImGui::Text("PRORES");
-                                                    ImGui::PopStyleColor();
-                                                }
+                                                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 0.20));
+                                                ImGui::Text("PRORES");
+                                                ImGui::PopStyleColor();
+                                            }
+                                            else {
+                                                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0.25, 0.25, 1));
+                                                ImGui::Text("PRORES");
+                                                ImGui::PopStyleColor();
                                             }
                                         }
+
                                         ImGui::PushFont(globals.arial);
                                         if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Will export a .mov mediafile"); }
                                         ImGui::PopFont();
@@ -302,23 +338,28 @@ void ui::render()
                                     // PNG Button
                                     ImGui::SetCursorPos({ 235,20 });
                                     {
-                                        if (ImGui::Button("  ", { 45,35 })) globals.codec = "png";
+                                        if (ImGui::Button("  ", { 45,35 }))
                                         {
-                                            ImGui::SetCursorPos({ 235, 25 });
+                                            globals.codec = "png";
+                                            globals.args = "\" -c:v mpeg4 -vtag xvid -qscale:v 1 -qscale:a 1 -g 32 -vsync 1 -y \"";
+                                            globals.filetype = "-%04d.png";
+                                        }
+
+                                        ImGui::SetCursorPos({ 235, 25 });
+                                        {
+                                            if (globals.codec != "png")
                                             {
-                                                if (globals.codec != "png")
-                                                {
-                                                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 0.20));
-                                                    ImGui::Text("PNG");
-                                                    ImGui::PopStyleColor();
-                                                }
-                                                else {
-                                                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0.25, 0.25, 1));
-                                                    ImGui::Text("PNG");
-                                                    ImGui::PopStyleColor();
-                                                }
+                                                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 0.20));
+                                                ImGui::Text("PNG");
+                                                ImGui::PopStyleColor();
+                                            }
+                                            else {
+                                                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0.25, 0.25, 1));
+                                                ImGui::Text("PNG");
+                                                ImGui::PopStyleColor();
                                             }
                                         }
+                                        
                                         ImGui::PushFont(globals.arial);
                                         if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Will export a png sequence"); }
                                         ImGui::PopFont();
@@ -327,23 +368,28 @@ void ui::render()
                                     // TGA Button
                                     ImGui::SetCursorPos({ 320,20 });
                                     {
-                                        if (ImGui::Button("   ", { 40,30 })) globals.codec = "tga";
+                                        if (ImGui::Button("   ", { 40,30 }))
                                         {
-                                            ImGui::SetCursorPos({ 320, 25 });
+                                            globals.codec = "tga";
+                                            globals.args = "\" -y \"";
+                                            globals.filetype = "-%04d.tga";
+                                        }
+
+                                        ImGui::SetCursorPos({ 320, 25 });
+                                        {
+                                            if (globals.codec != "tga")
                                             {
-                                                if (globals.codec != "tga")
-                                                {
-                                                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 0.20));
-                                                    ImGui::Text("TGA");
-                                                    ImGui::PopStyleColor();
-                                                }
-                                                else {
-                                                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0.25, 0.25, 1));
-                                                    ImGui::Text("TGA");
-                                                    ImGui::PopStyleColor();
-                                                }
+                                                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 0.20));
+                                                ImGui::Text("TGA");
+                                                ImGui::PopStyleColor();
+                                            }
+                                            else {
+                                                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0.25, 0.25, 1));
+                                                ImGui::Text("TGA");
+                                                ImGui::PopStyleColor();
                                             }
                                         }
+                                        
                                         ImGui::PushFont(globals.arial);
                                         if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Will export a tga sequence"); }
                                         ImGui::PopFont();
@@ -375,7 +421,7 @@ void ui::render()
                     if (globals.start && !globals.stopEncode) 
                     {
                         globals.startBtn = "STOP";
-                        globals.convdir = temp + "\\" + getTime().str();
+                        globals.convdir = ui::temp + "\\" + getTime().str();
 
                         _mkdir(globals.convdir.c_str());
 

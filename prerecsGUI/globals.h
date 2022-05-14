@@ -10,6 +10,7 @@ public:
 	bool start = true;
 	int startOption = 3;
 	char fname[128];
+	char argsDisplay[128];
 
 	std::vector<std::string> locations = {};
 	std::string locationsDisplay[99];
@@ -19,6 +20,8 @@ public:
 	std::string dir;
 	std::string convdir;
 	std::string cnsl;
+	std::string args = "\" -c:v mpeg4 -vtag xvid -qscale:v 1 -qscale:a 1 -g 32 -vsync 1 -y \"";
+	std::string filetype = ".avi";
 
 	ImGui::FileBrowser fileDialog = ImGui::FileBrowser(ImGuiFileBrowserFlags_MultipleSelection);
 	ImGui::FileBrowser folderDialog = ImGui::FileBrowser(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_MultipleSelection);

@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #include <d3d9.h>
 #include "../imgui/imgui.h"
 
@@ -11,6 +12,8 @@ namespace ui {
 namespace ui {
 	inline LPDIRECT3DDEVICE9 dev;
 	inline const char* window_title = "prerecsGUI v.0.2";
+	inline std::string temp;
+	inline bool argsOpen = false;
 }
 
 namespace ui {

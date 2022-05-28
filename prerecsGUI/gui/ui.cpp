@@ -50,28 +50,6 @@ void ui::createDir()
     strcpy(globals.fname, globals.dir.c_str());
 }
 
-static void showArgs(bool* p_open)
-{
-    ImGui::SetNextWindowSize({ 450.f,80 });
-
-    if (ImGui::Begin("FFmpeg Args", p_open, ImGuiWindowFlags_NoResize))
-    {
-        ImGui::SetCursorPos({ 0,40 });
-        {
-            ImGui::PushItemWidth(450);
-
-            if (globals.argsDisplay[0] == '\0');
-                strcpy(globals.argsDisplay, globals.args.c_str());
-
-            ImGui::InputText("####", globals.argsDisplay, IM_ARRAYSIZE(globals.argsDisplay));
-            globals.args = globals.argsDisplay;
-            globals.args;
-            ImGui::PopItemWidth();
-        }
-    }
-    ImGui::End();
-}
-
 void ui::render() 
 {
     if (!globals.active) 
@@ -86,15 +64,17 @@ void ui::render()
     ui::temp = globals.fname;
     globals.appdata = ui::temp;
 
-    if (ui::argsOpen)
-        showArgs(&ui::argsOpen);
-
     ImGui::Begin(window_title, &globals.active, window_flags);
     {
         if (globals.startOption == 3) {
-            ImGui::SetNextWindowPos(ImVec2(1920/2.3, 1080/ 2.3), ImGuiCond_Once); // only center on 1920p displays atm
+            ImGui::SetNextWindowPos(ImVec2(1920/2.3, 1080/2.3), ImGuiCond_Once); // only center on 1920p displays atm
             ImGui::SetNextWindowSize(ImVec2(300, 150));
             ImGui::OpenPopup("Source Selection");
+        }
+
+        if (ui::argsOpen) {
+            ImGui::SetNextWindowSize(ImVec2(450, 150));
+            ImGui::OpenPopup("FFmpeg Args");
         }
 
         if (ImGui::BeginPopupModal("Source Selection", NULL, ImGuiWindowFlags_NoDecoration))
@@ -160,6 +140,24 @@ void ui::render()
             ImGui::EndPopup();
         }
 
+        ImGui::SetNextWindowSize(ImVec2(450, 90));
+        if (ImGui::BeginPopupModal("FFmpeg Args", &ui::argsOpen, ImGuiWindowFlags_NoResize))
+        {
+            ImGui::SetCursorPos({ 6,40 });
+            {
+                ImGui::PushItemWidth(450);
+
+                if (globals.argsDisplay[0] == '\0');
+                strcpy(globals.argsDisplay, globals.args.c_str());
+
+                ImGui::InputText("####", globals.argsDisplay, IM_ARRAYSIZE(globals.argsDisplay));
+                globals.args = globals.argsDisplay;
+                globals.args;
+                ImGui::PopItemWidth();
+            }
+            ImGui::EndPopup();
+        }
+
         ImGui::SetCursorPos({ 20,35 });
         if (ImGui::BeginChild("##Queue", ImVec2(140,380))) 
         {
@@ -169,17 +167,47 @@ void ui::render()
                 ImGui::Text(que.c_str());
                 ImGui::Separator();
 
+                ImVec4 error = ImVec4(1, 0.5, 0.5, 1);
+                ImVec4 finished = ImVec4(0.5, 1, 0.5, 1);
+                ImVec4 started = ImVec4(1, 1, 0.5, 1);
+
                 for (int i = 0; i < globals.locations.size(); i++)
                 {
-                    if (globals.locationsDisplay[i] == "")
-                        globals.locationsDisplay[i] = globals.locations[i].substr(globals.locations[i].find_last_of("/\\") + 1);
-
-                    ImGui::Text(globals.locationsDisplay[i].c_str());
-
-                    if (ImGui::IsItemHovered()) 
-                    {
-                        ImGui::SetTooltip(globals.locations.at(i).c_str());
-                    }
+                   if (globals.locationsDisplay.at(i) == "")
+                       globals.locationsDisplay.at(i) = globals.locations[i].substr(globals.locations[i].find_last_of("/\\") + 1);
+                                       
+                   if (globals.locationsDisplay.at(i).find("Finished") != std::string::npos)
+                   {
+                       ImGui::PushStyleColor(ImGuiCol_Text, finished);
+                   }
+                   else if (globals.locationsDisplay.at(i).find("Filetype Error") != std::string::npos)
+                   {
+                       ImGui::PushStyleColor(ImGuiCol_Text, error);
+                   }
+                   
+                   else if (globals.locationsDisplay.at(i).find("Started") != std::string::npos)
+                   {
+                       ImGui::PushStyleColor(ImGuiCol_Text, started);
+                   }
+                   else
+                   {
+                       ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
+                   }
+                   
+                   
+                   ImGui::Text(globals.locationsDisplay[i].c_str());
+                   
+                   ImGui::PopStyleColor();
+                   
+                   if (ImGui::IsItemHovered()) 
+                   {
+                       ImGui::BeginTooltip();
+                       ImGui::Text(globals.locations.at(i).c_str());
+                       ImGui::Separator();
+                       ImGui::Text(globals.locationsDisplay[i].c_str());
+                       ImGui::EndTooltip();
+                               
+                   }
                 }
                 
             }
@@ -204,7 +232,9 @@ void ui::render()
             }
             ImGui::SetCursorPos({ 92, 435 });
             {
-                if (ImGui::Button(ICON_FK_FILE"", { 30,30 }));
+                if (ImGui::Button(ICON_FK_FILE"", { 30,30 }))
+                    ui::configOpen = !ui::configOpen;
+
                     // Select config (Output directory, custom ffmpeg args)
             }
             ImGui::SetCursorPos({ 127, 435 });
@@ -249,7 +279,8 @@ void ui::render()
             {
                 if (ImGui::Button("CLEAR QUEUE", {150,74}))
                 {
-                    std::fill(globals.locationsDisplay, globals.locationsDisplay + globals.locationsDisplay->size(), "");
+                   // std::fill(globals.locationsDisplay, globals.locationsDisplay + globals.locationsDisplay->size(), "");
+                    globals.locationsDisplay.clear();
                     globals.locations.clear();
                 }
                 if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Clear media queue to select new files"); }
@@ -459,7 +490,10 @@ void ui::render()
             for (int i = 0; i < selectedFiles.size(); i++)
             {
                 std::string loc = selectedFiles.at(i).u8string();
+                std::string lastof = loc.substr(loc.find_last_of("/\\") + 1);
+
                 globals.locations.push_back(loc);
+                globals.locationsDisplay.push_back(lastof);
             }
 
             globals.fileDialog.ClearSelected();
@@ -472,7 +506,11 @@ void ui::render()
 
             for (const auto& file : std::filesystem::directory_iterator(path))
             {
-                globals.locations.push_back(file.path().u8string());
+                std::string f = file.path().u8string();
+                std::string lastof = f.substr(f.find_last_of("/\\") + 1);
+
+                globals.locations.push_back(f);
+                globals.locationsDisplay.push_back(lastof);
             }
 
             globals.folderDialog.ClearSelected();

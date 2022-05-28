@@ -13,7 +13,8 @@ public:
 	char argsDisplay[128];
 
 	std::vector<std::string> locations = {};
-	std::string locationsDisplay[99];
+	std::vector<std::string> locationsDisplay = {};
+
 	std::string startBtn = "START";
 	std::string codec = "xvid";
 	std::string appdata;

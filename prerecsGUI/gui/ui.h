@@ -14,6 +14,8 @@ namespace ui {
 	inline const char* window_title = "prerecsGUI v.0.2";
 	inline std::string temp;
 	inline bool argsOpen = false;
+	inline bool configOpen = false;
+	inline ImVec4 text;
 }
 
 namespace ui {

@@ -156,6 +156,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="config\config.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
@@ -168,6 +169,7 @@
     <ClCompile Include="gui\ui.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="config\config.h" />
     <ClInclude Include="font\forkawesome-webfont.h" />
     <ClInclude Include="font\IconsForkAwesome.h" />
     <ClInclude Include="globals.h" />

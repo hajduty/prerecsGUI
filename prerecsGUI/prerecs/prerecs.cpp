@@ -62,7 +62,7 @@ void startEncode()
     for (int i = 0; i < globals.locations.size(); i++)
     {
         std::string base_filename = globals.locations[i].substr(globals.locations[i].find_last_of("/\\") + 1);
-        std::string temp = globals.locationsDisplay[i];
+        std::string temp = globals.locationsDisplay.at(i);
         std::filesystem::path p = base_filename;
 
         if (globals.stopEncode) 
@@ -70,6 +70,21 @@ void startEncode()
             globals.stopEncode = false;
             break;
         }
+
+        if (globals.locationsDisplay[i].find("Finished") != std::string::npos)
+            continue;
+
+        std::array<std::string, 5> a{ ".png", ".tga", ".avi", ".mp4", ".mov" };
+
+        auto it = std::find_if(begin(a), end(a),[&](const std::string& s) { return globals.locationsDisplay[i].find(s) != std::string::npos; });
+
+        if (!(it != end(a)))
+        {
+            globals.locationsDisplay[i] += " - Filetype Error";
+            continue;
+        }
+
+        //if (!(globals.locationsDisplay[i].find(".tga") != std::string::npos))
 
         if (globals.codec == "png" | globals.codec == "tga")
         {
@@ -102,9 +117,9 @@ void startEncode()
                 cmd = "ffmpeg -i \"" + globals.locations[i] + globals.args + sourcePath + "\\" + globals.codec + "_" + p.replace_extension().u8string() + globals.filetype + "\" 2>&1";
             }
         }
-        globals.locationsDisplay[i] = base_filename + " - Started";
+        globals.locationsDisplay.at(i) = base_filename + " - Started";
         globals.cnsl += exec(cmd.c_str());
-        globals.locationsDisplay[i] = base_filename + " Finished";
+        globals.locationsDisplay.at(i) = base_filename + " - Finished";
     }
     globals.startBtn = "Start";
     globals.start = true;

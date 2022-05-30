@@ -2,7 +2,6 @@
 #include "gui/ui.h"
 #include "globals.h"
 #include "imgui/imfilebrowser.h"
-#include "imgui/helvetica.h"
 #include "font/IconsForkAwesome.h"
 #include "font/forkawesome-webfont.h"
 
@@ -47,6 +46,12 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
     globals.arial = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\Arial.ttf", 14.5);
     io.Fonts->AddFontFromMemoryCompressedTTF(font_compressed_data, font_compressed_size, 15.0f, &config, icon_ranges);
+
+    globals.arialSmall = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\Arial.ttf", 12.5);
+    io.Fonts->AddFontFromMemoryCompressedTTF(font_compressed_data, font_compressed_size, 12.5, &config, icon_ranges);
+
+    globals.arialMedium = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\Arial.ttf", 16.5);
+    io.Fonts->AddFontFromMemoryCompressedTTF(font_compressed_data, font_compressed_size, 16.5, &config, icon_ranges);
 
     globals.arialBig = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\Arial.ttf", 20.5);
     io.Fonts->AddFontFromMemoryCompressedTTF(font_compressed_data, font_compressed_size, 20.f, &config, icon_ranges);

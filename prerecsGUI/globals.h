@@ -14,13 +14,13 @@ public:
 
 	std::vector<std::string> locations = {};
 	std::vector<std::string> locationsDisplay = {};
+	std::vector<std::string> cnsl = {};
 
 	std::string startBtn = "START";
 	std::string codec = "xvid";
 	std::string appdata;
 	std::string dir;
 	std::string convdir;
-	std::string cnsl;
 	std::string args = "\" -c:v mpeg4 -vtag xvid -qscale:v 1 -qscale:a 1 -g 32 -vsync 1 -y \"";
 	std::string filetype = ".avi";
 
@@ -28,6 +28,8 @@ public:
 	ImGui::FileBrowser folderDialog = ImGui::FileBrowser(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_MultipleSelection);
 
 	ImFont* arialBig;
+	ImFont* arialMedium;
+	ImFont* arialSmall;
 	ImFont* arial;
 	ImFont* bigIcon;
 };

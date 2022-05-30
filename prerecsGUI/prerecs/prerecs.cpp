@@ -1,5 +1,6 @@
 #include <iostream>
 #include "../globals.h"
+#include "prerecs.h"
 #include <string>
 #include <cstdio>
 #include <memory>
@@ -10,9 +11,7 @@
 #include <utility>
 #include <direct.h>
 
-std::string subFolderPath;
-
-std::string exec(const char* cmd)
+std::string prerecs::exec(const char* cmd)
 {
     char moduleFilePath[MAX_PATH];
     GetModuleFileName(NULL, moduleFilePath, MAX_PATH);
@@ -21,10 +20,10 @@ std::string exec(const char* cmd)
     std::string::size_type pos = std::string(moduleFilePath).rfind("\\");
 
     // Replace the program name by your sub-folder.
-    subFolderPath = std::string(moduleFilePath).substr(0, pos);
+    prerecs::subFolderPath = std::string(moduleFilePath).substr(0, pos);
 
     // Change into the sub-folder relative to your program.
-    SetCurrentDirectory(subFolderPath.c_str());
+    SetCurrentDirectory(prerecs::subFolderPath.c_str());
 
     std::array<char, 128> buffer;
     std::string result;
@@ -43,19 +42,22 @@ std::string exec(const char* cmd)
 
     if (rc == EXIT_SUCCESS)
     {
+        prerecs::success = true;
         std::cout << "SUCCESS\n";
     }
     else
     {
+        prerecs::success = false;
         std::cout << "FAILED\n";
     }
 
     return result;
 }
 
-void startEncode()
+void prerecs::startEncode()
 {
-    SetCurrentDirectory(subFolderPath.c_str());
+    // Set directory to use ffmpeg command in
+    SetCurrentDirectory(prerecs::subFolderPath.c_str());
 
     std::string cmd;
 
@@ -71,24 +73,13 @@ void startEncode()
             break;
         }
 
+        // Check if file has already been used before
         if (globals.locationsDisplay[i].find("Finished") != std::string::npos)
             continue;
 
-        std::array<std::string, 5> a{ ".png", ".tga", ".avi", ".mp4", ".mov" };
-
-        auto it = std::find_if(begin(a), end(a),[&](const std::string& s) { return globals.locationsDisplay[i].find(s) != std::string::npos; });
-
-        if (!(it != end(a)))
-        {
-            globals.locationsDisplay[i] += " - Filetype Error";
-            continue;
-        }
-
-        //if (!(globals.locationsDisplay[i].find(".tga") != std::string::npos))
-
         if (globals.codec == "png" | globals.codec == "tga")
         {
-            if (!globals.fname[0] == '\0')
+            if (!globals.fname[0] == '\0') // If output path is empty, output in a new folder in source directory
             {
                 std::string pngPath = globals.convdir + "\\" + p.replace_extension().u8string();
                 _mkdir(pngPath.c_str());
@@ -117,10 +108,21 @@ void startEncode()
                 cmd = "ffmpeg -i \"" + globals.locations[i] + globals.args + sourcePath + "\\" + globals.codec + "_" + p.replace_extension().u8string() + globals.filetype + "\" 2>&1";
             }
         }
-        globals.locationsDisplay.at(i) = base_filename + " - Started";
-        globals.cnsl += exec(cmd.c_str());
-        globals.locationsDisplay.at(i) = base_filename + " - Finished";
+
+        globals.locationsDisplay.at(i) = base_filename + " - Started"; // Change displayname & status
+        
+        globals.cnsl.push_back(exec(cmd.c_str())); // Execute the ffmpeg command
+
+        if (prerecs::success)
+        {
+            globals.locationsDisplay.at(i) = base_filename + " - Finished"; // Change displayname & status
+        }
+        else
+        {
+            globals.locationsDisplay.at(i) = base_filename + " - Error"; // Change displayname & status
+        }
     }
+    // Reset start button
     globals.startBtn = "Start";
     globals.start = true;
 }

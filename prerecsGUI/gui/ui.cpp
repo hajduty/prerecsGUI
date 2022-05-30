@@ -6,6 +6,8 @@
 #include "../imgui/imfilebrowser.h"
 #include "../prerecs/prerecs.h"
 #include "../font/IconsForkAwesome.h"
+#include "../config/config.h"
+#include <fstream>
 #include <chrono>
 #include <filesystem>
 #include <direct.h>
@@ -21,6 +23,39 @@
 #include <cstring>
 #include <cctype>
 
+void textCheckbox(std::string text, ImVec2 size, bool* p, ImVec2 pos)
+{
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
+    ImGui::SetCursorPos({ pos.x, pos.y });
+
+    ImGui::PushFont(globals.arialMedium);
+    std::string bName = "##" + text;
+    if (ImGui::Button(bName.c_str(), { size.x,size.y }))
+    {
+        *p = !*p;
+        std::cout << *p;
+    }
+
+    ImGui::SetCursorPos({ pos.x, pos.y });
+    {
+        if (*p == false)
+        {
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 0.15));
+            ImGui::Text(text.c_str());
+            ImGui::PopStyleColor();
+        }
+        else {
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0.25, 0.25, 1));
+            ImGui::Text(text.c_str());
+            ImGui::PopStyleColor();
+        }
+    }
+    ImGui::PopFont();
+    ImGui::PopStyleColor(2);
+}
+
+// generate folder name 
 auto getTime() {
     std::time_t t = std::time(0);
     std::tm* now = std::localtime(&t);
@@ -42,14 +77,17 @@ std::string getAppdata()
     }
 }
 
+// Get appdata folder, & set variables
 void ui::createDir()
 {
     globals.appdata = getAppdata();
     globals.appdata += "\\prerecsGUI";
+    config::appdata = globals.appdata;
     globals.dir = globals.appdata;
     strcpy(globals.fname, globals.dir.c_str());
 }
 
+int temptemptemp = 1;
 void ui::render() 
 {
     if (!globals.active) 
@@ -60,24 +98,34 @@ void ui::render()
     ImGui::SetNextWindowBgAlpha(1.f);
 
     ImGuiStyle* style = &ImGui::GetStyle();
+    ImGuiIO& io = ImGui::GetIO();
 
+    // no clue why i did this, but it works
     ui::temp = globals.fname;
     globals.appdata = ui::temp;
 
     ImGui::Begin(window_title, &globals.active, window_flags);
     {
         if (globals.startOption == 3) {
-            ImGui::SetNextWindowPos(ImVec2(1920/2.3, 1080/2.3), ImGuiCond_Once); // only center on 1920p displays atm
-            ImGui::SetNextWindowSize(ImVec2(300, 150));
+            if (temptemptemp) {
+                ImGui::SetNextWindowPos(ImVec2(1920 / 2.3, 1080 / 2.3));
+                temptemptemp = 0;
+            }
+
             ImGui::OpenPopup("Source Selection");
         }
 
         if (ui::argsOpen) {
-            ImGui::SetNextWindowSize(ImVec2(450, 150));
             ImGui::OpenPopup("FFmpeg Args");
         }
 
-        if (ImGui::BeginPopupModal("Source Selection", NULL, ImGuiWindowFlags_NoDecoration))
+        if (ui::configOpen) {
+            ImGui::OpenPopup("Configs");
+        }
+
+        // source selection modal
+        ImGui::SetNextWindowSize(ImVec2(300, 150));
+        if (ImGui::BeginPopupModal("Source Selection", NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove))
         {
 
             static ImVec4 fileText = ImVec4(0.15, 0.15, 0.15, 1);
@@ -140,8 +188,9 @@ void ui::render()
             ImGui::EndPopup();
         }
 
+        // ffmpeg args modal
         ImGui::SetNextWindowSize(ImVec2(450, 90));
-        if (ImGui::BeginPopupModal("FFmpeg Args", &ui::argsOpen, ImGuiWindowFlags_NoResize))
+        if (ImGui::BeginPopupModal("FFmpeg Args", &ui::argsOpen, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
         {
             ImGui::SetCursorPos({ 6,40 });
             {
@@ -158,6 +207,128 @@ void ui::render()
             ImGui::EndPopup();
         }
 
+        // configs modal
+        ImGui::SetNextWindowSize(ImVec2(400, 300));
+        if (ImGui::BeginPopupModal("Configs", &ui::configOpen, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoMove))
+        {
+            ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0, 0, 0, 0.4));
+            {
+                ImGui::SetCursorPos({ 0,20 });
+                if (ImGui::BeginChild("##Checkboxes", ImVec2(200, 140)))
+                {
+                    textCheckbox("SAVE FFMPEG ARGS", { 200,40 }, &config::saveArgs, ImVec2(25, 15));
+
+                    textCheckbox("SAVE OUTPUT DIR", { 200,40 }, &config::saveDir, ImVec2(32, 55));
+
+                    textCheckbox("SAVE QUEUE", { 200,40 }, &config::saveQueue, ImVec2(52, 95));
+                    ImGui::EndChild();
+                }
+                ImGui::PopStyleColor();
+            }
+
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.25f));
+            {
+                ImGui::SetCursorPos({ 0,270 });
+                {
+                    if (ImGui::Button("LOAD", { 100,30 }))
+                    {
+                        config::loadConfig();
+                        ui::configOpen = !ui::configOpen;
+                    }
+                }
+                ImGui::SetCursorPos({ 100,270 });
+                {
+                    if (ImGui::Button("SAVE", { 100,30 }))
+                    {
+                        config::saveConfig();
+                        ui::configOpen = !ui::configOpen;
+                    }
+                }
+                ImGui::PopStyleColor();
+            }
+
+            ImGui::SetCursorPos({ 0,247 });
+            {
+                ImGui::PushFont(globals.arial);
+                ImGui::PushItemWidth(200);
+                ImGui::InputText("##", config::configName, IM_ARRAYSIZE(config::configName));
+                ImGui::PopItemWidth();
+                ImGui::PopFont();
+            }
+
+            std::string filePath;
+            std::string lastof;
+            std::string ee;
+            bool clicked = false;
+            ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.10f));
+            {
+                ImGui::SetCursorPos({ 200,0 });
+                {
+                    if (ImGui::BeginChild("##Config", { 200,300 }))
+                    {
+                        ImGui::SetCursorPos({ 0,30 });
+                        std::string path = config::appdata + "\\configs\\";
+
+                        for (const auto& file : std::filesystem::directory_iterator(path))
+                        {
+                            filePath = file.path().u8string();
+                            lastof = filePath.substr(filePath.find_last_of("/\\") + 1);
+
+                            if (lastof == config::configName) {
+                                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0.25, 0.25, 1));
+                                ImGui::Text(lastof.c_str());
+                                ImGui::PopStyleColor();
+                            }
+                            else {
+                                ImGui::Text(lastof.c_str());
+                            }
+
+                            if (ImGui::IsItemHovered())
+                            {
+                                if (io.MouseDown[0]) {
+
+                                    std::cout << "clicked" << "\n";
+                                    ee = filePath;
+                                    clicked = !clicked;
+                                    strcpy(config::configName, lastof.c_str());
+                                }
+                            }
+                        }
+                        ImGui::EndChild();
+                    }
+                }
+                ImGui::PopStyleColor();
+
+                ImGui::SetCursorPos({ 0,140 });
+                {
+                    if (ImGui::BeginChild("##ConfigData", { 200,110 }, window_flags))
+                    {
+                        static std::string str;
+
+                        if (clicked) {
+                            std::ifstream t(ee);
+                            std::stringstream buffer;
+                            buffer << t.rdbuf();
+                            str = buffer.str();
+                            t.close();
+                            clicked = !clicked;
+                        }
+
+                        ImGui::PushFont(globals.arialSmall);
+                        {
+                            if (str != "")
+                                ImGui::TextWrapped(str.c_str());
+
+                            ImGui::PopFont();
+                        }
+                        ImGui::EndChild();
+                    }
+                }
+            }
+            ImGui::EndPopup();
+        }
+
+        // child queue
         ImGui::SetCursorPos({ 20,35 });
         if (ImGui::BeginChild("##Queue", ImVec2(140,380))) 
         {
@@ -180,7 +351,7 @@ void ui::render()
                    {
                        ImGui::PushStyleColor(ImGuiCol_Text, finished);
                    }
-                   else if (globals.locationsDisplay.at(i).find("Filetype Error") != std::string::npos)
+                   else if (globals.locationsDisplay.at(i).find("Error") != std::string::npos)
                    {
                        ImGui::PushStyleColor(ImGuiCol_Text, error);
                    }
@@ -202,10 +373,23 @@ void ui::render()
                    if (ImGui::IsItemHovered()) 
                    {
                        ImGui::BeginTooltip();
-                       ImGui::Text(globals.locations.at(i).c_str());
-                       ImGui::Separator();
-                       ImGui::Text(globals.locationsDisplay[i].c_str());
-                       ImGui::EndTooltip();
+                       {
+                           ImGui::Text(globals.locations.at(i).c_str());
+                           ImGui::Separator();
+                           ImGui::Text(globals.locationsDisplay[i].c_str());
+
+                           if (globals.locationsDisplay.at(i).find("Error"))
+                           {
+                               ImGui::Separator();
+                               ImGui::Text("Click for info");
+                           }
+                           ImGui::EndTooltip();
+                       }
+
+                       if (io.MouseDown[0])
+                       {
+
+                       }
                                
                    }
                 }
@@ -279,9 +463,9 @@ void ui::render()
             {
                 if (ImGui::Button("CLEAR QUEUE", {150,74}))
                 {
-                   // std::fill(globals.locationsDisplay, globals.locationsDisplay + globals.locationsDisplay->size(), "");
                     globals.locationsDisplay.clear();
                     globals.locations.clear();
+                    globals.cnsl.clear();
                 }
                 if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Clear media queue to select new files"); }
             }
@@ -293,7 +477,6 @@ void ui::render()
                     ImGui::InputText("###", globals.fname, IM_ARRAYSIZE(globals.fname));
                     ImGui::PopItemWidth();
                     if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Output directory (If empty, will output converted files in a new folder in source directory)"); }
-
                 }
                 ImGui::SetCursorPos({ 0,120 });
                 ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4({ 0.0f, 0.0f, 0.0f, 0.25f }));
@@ -458,7 +641,7 @@ void ui::render()
 
                         std::cout << "start";
 
-                        CreateThread(0, 0, (LPTHREAD_START_ROUTINE)startEncode, 0, 0, 0);
+                        CreateThread(0, 0, (LPTHREAD_START_ROUTINE)prerecs::startEncode, 0, 0, 0);
                     }
                     globals.start = !globals.start;
                 }
@@ -475,7 +658,10 @@ void ui::render()
                 ImGui::SetCursorPos({ 5.f,5.f });
                 ImGui::TextWrapped("Console");
                 ImGui::Separator();
-                ImGui::TextWrapped(globals.cnsl.c_str());
+                for (int i = 0; i < globals.cnsl.size(); i++)
+                {
+                    ImGui::TextWrapped(globals.cnsl.at(i).c_str());
+                }
                 ImGui::EndChild();
             }
         }
@@ -494,6 +680,7 @@ void ui::render()
 
                 globals.locations.push_back(loc);
                 globals.locationsDisplay.push_back(lastof);
+
             }
 
             globals.fileDialog.ClearSelected();
@@ -508,9 +695,16 @@ void ui::render()
             {
                 std::string f = file.path().u8string();
                 std::string lastof = f.substr(f.find_last_of("/\\") + 1);
+                std::array<std::string, 5> a{ ".png", ".tga", ".avi", ".mp4", ".mov" };
 
-                globals.locations.push_back(f);
-                globals.locationsDisplay.push_back(lastof);
+                auto it = std::find_if(begin(a), end(a), [&](const std::string& s) { return f.find(s) != std::string::npos; });
+
+                if (it != end(a))
+                {
+                    globals.locations.push_back(f);
+                    globals.locationsDisplay.push_back(lastof);
+                }
+
             }
 
             globals.folderDialog.ClearSelected();

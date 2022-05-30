@@ -170,6 +170,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config\config.h" />
+    <ClInclude Include="config\miniconf.h" />
+    <ClInclude Include="config\picojson.h" />
     <ClInclude Include="font\forkawesome-webfont.h" />
     <ClInclude Include="font\IconsForkAwesome.h" />
     <ClInclude Include="globals.h" />

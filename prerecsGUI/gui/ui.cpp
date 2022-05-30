@@ -372,25 +372,41 @@ void ui::render()
                    
                    if (ImGui::IsItemHovered()) 
                    {
+                       static std::string errorMsg;
+                       static std::string errorLoc;
+
                        ImGui::BeginTooltip();
                        {
                            ImGui::Text(globals.locations.at(i).c_str());
                            ImGui::Separator();
                            ImGui::Text(globals.locationsDisplay[i].c_str());
 
-                           if (globals.locationsDisplay.at(i).find("Error"))
+                           if (globals.locationsDisplay.at(i).find("Error") != std::string::npos)
                            {
                                ImGui::Separator();
-                               ImGui::Text("Click for info");
+                               ImGui::TextColored(ImVec4(1,0.25,0.25,1), "Hold down for info");
+
+                               if (io.MouseDown[0])
+                               {
+                                   errorLoc = globals.locationsDisplay.at(i);
+                                   errorMsg = globals.cnsl.at(i);
+                               }
+
+                               if (errorLoc == globals.locationsDisplay.at(i))
+                               {
+                                   ImGui::Separator();
+                                   ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 0.25, 1));
+                                   ImGui::TextUnformatted(errorMsg.c_str());
+                                   ImGui::PopStyleColor();
+
+                                   if (io.MouseDown[0])
+                                   {
+                                       errorLoc = "";
+                                   }
+                               }
                            }
                            ImGui::EndTooltip();
                        }
-
-                       if (io.MouseDown[0])
-                       {
-
-                       }
-                               
                    }
                 }
                 

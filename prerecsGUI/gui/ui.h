@@ -11,7 +11,7 @@ namespace ui {
 
 namespace ui {
 	inline LPDIRECT3DDEVICE9 dev;
-	inline const char* window_title = "prerecsGUI v.0.2";
+	inline const char* window_title = "prerecsGUI v.0.3";
 	inline std::string temp;
 	inline bool argsOpen = false;
 	inline bool configOpen = false;

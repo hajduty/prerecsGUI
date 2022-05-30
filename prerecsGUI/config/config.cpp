@@ -11,13 +11,15 @@ void config::saveConfig() {
 
 	miniconf::Config conf;
 
+	config::configDir = config::appdata + "\\configs\\";
+
 	std::string configPath = config::configDir + config::configName + ".json";
 
 	if (config::configName[0] == '\0')
 		return;
 
-	config::configDir = config::appdata + "\\configs\\";
-	_mkdir(config::configDir.c_str());
+	if (!(std::filesystem::exists(config::configDir)))
+		_mkdir(config::configDir.c_str());
 
 	conf.description("prerecsGUI config");
 

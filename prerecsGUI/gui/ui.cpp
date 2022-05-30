@@ -269,6 +269,9 @@ void ui::render()
                         ImGui::SetCursorPos({ 0,30 });
                         std::string path = config::appdata + "\\configs\\";
 
+                        if (!(std::filesystem::exists(path)))
+                            _mkdir(path.c_str());
+
                         for (const auto& file : std::filesystem::directory_iterator(path))
                         {
                             filePath = file.path().u8string();
@@ -469,7 +472,9 @@ void ui::render()
             {
                 if (ImGui::Button("OPEN DIR", { 100,74 }))
                 {
-                    _mkdir(globals.appdata.c_str());
+                    if (!(std::filesystem::exists(globals.appdata)))
+                        _mkdir(globals.appdata.c_str());
+
                     ShellExecuteA(NULL, "open", globals.appdata.c_str(), NULL, NULL, SW_SHOWDEFAULT);
                 }
                 if (ImGui::IsItemHovered()) { ImGui::SetTooltip("Open output directory"); }
@@ -653,7 +658,8 @@ void ui::render()
                         globals.startBtn = "STOP";
                         globals.convdir = ui::temp + "\\" + getTime().str();
 
-                        _mkdir(globals.convdir.c_str());
+                        if (!(std::filesystem::exists(globals.convdir)))
+                            _mkdir(globals.convdir.c_str());
 
                         std::cout << "start";
 

@@ -16,4 +16,8 @@ todo:
 - [ ] force cancel ffmpeg encoding
 - [x] png/tga to video option
 
+## Requirements
 
+* [Xvid](https://www.xvid.com/download/) (download & install)
+* [quicktime](https://support.apple.com/kb/DL837) (download & install)
+* [ffmpeg](https://drive.google.com/uc?export=download&id=1ozqMctkULuvVtCogmyZjXGjw7Q9D-Je0) (this file can either be placed in `C:\Windows\System32`, added as an [environment variable](https://video.stackexchange.com/questions/20495/how-do-i-set-up-and-use-ffmpeg-in-windows) or placed in the same directory as `prorec.bat` in order for it to work)

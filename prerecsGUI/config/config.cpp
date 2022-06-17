@@ -4,16 +4,29 @@
 #include <string>
 #include <direct.h>
 #include <filesystem>
+
+#include <filesystem>
+#include <utility>
+#include <direct.h>
+
 #include "../globals.h"
 #include "../imgui/imgui.h"
 
-void config::saveConfig() {
-
+void config::saveConfig() 
+{
 	miniconf::Config conf;
-
 	config::configDir = config::appdata + "\\configs\\";
+	std::string c = config::configName;
+	std::string configPath;
 
-	std::string configPath = config::configDir + config::configName + ".json";
+	if (c.find(".json") != std::string::npos) 
+	{
+		configPath = config::configDir + config::configName;
+	}
+	else
+	{
+		configPath = config::configDir + config::configName + ".json";
+	}
 
 	if (config::configName[0] == '\0')
 		return;
@@ -23,20 +36,20 @@ void config::saveConfig() {
 
 	conf.description("prerecsGUI config");
 
-	conf.option("saveArgs").defaultValue(true).required(true).description("");
-	conf.option("args").defaultValue("").required(false).description("");
+	conf.option("ffmpeg.saveArgs").shortflag("x").defaultValue(true).required(true).description("");
+	conf.option("ffmpeg.args").shortflag("a").defaultValue("").required(false).description("");
 
-	conf.option("saveQueue").defaultValue(true).required(true).description("");
-	conf.option("queue").defaultValue("").required(false).description("");
+	conf.option("queue.saveQueue").shortflag("y").defaultValue(true).required(true).description("");
+	conf.option("queue.queueList").shortflag("b").defaultValue("").required(false).description("");
 
-	conf.option("saveDir").defaultValue(true).required(true).description("");
-	conf.option("dir").defaultValue("").required(false).description("");
+	conf.option("outputDir.saveDir").shortflag("z").defaultValue(true).required(true).description("");
+	conf.option("outputDir.dir").shortflag("c").defaultValue("").required(false).description("");
 
 	if (conf.parse(__argc, __argv)) 
 	{
-		conf["saveArgs"] = config::saveArgs;
-		conf["saveQueue"] = config::saveQueue;
-		conf["saveDir"] = config::saveDir;		
+		conf["ffmpeg.saveArgs"] = config::saveArgs;
+		conf["queue.saveQueue"] = config::saveQueue;
+		conf["outputDir.saveDir"] = config::saveDir;		
 
 		if (config::saveQueue)
 		{
@@ -49,17 +62,17 @@ void config::saveConfig() {
 				if (!(globals.locationsDisplay.at(i).find("Finished") != std::string::npos))
 					loc += globals.locations.at(i) + ";";
 			}
-			conf["queue"] = loc;
+			conf["queue.queueList"] = loc;
 		}
 
 		if (config::saveDir)
 		{
-			conf["dir"] = globals.dir;
+			conf["outputDir.dir"] = globals.dir;
 		}
 
 		if (config::saveArgs)
 		{
-			conf["args"] = globals.args;
+			conf["ffmpeg.args"] = globals.args;
 		}
 		std::string n = config::configName;
 		std::string nam = n + ".json";
@@ -73,10 +86,7 @@ void config::saveConfig() {
 void config::loadConfig()
 {
 	miniconf::Config conf;
-
 	config::configDir = config::appdata + "\\configs\\";
-
-
 	std::string configPath = config::configDir + config::configName;
 
 	if (!(configPath.find(".json") != std::string::npos) | !std::filesystem::exists(configPath))
@@ -84,20 +94,20 @@ void config::loadConfig()
 
 	conf.config(configPath);
 	
-	if (conf["saveArgs"].getBoolean() && config::saveArgs) 
+	if (conf["ffmpeg.saveArgs"].getBoolean() && config::saveArgs) 
 	{
-		globals.args = conf["args"].getString();
+		globals.args = conf["ffmpeg.args"].getString();
 	}
 
-	if (conf["saveDir"].getBoolean() && config::saveDir) 
+	if (conf["outputDir.saveDir"].getBoolean() && config::saveDir) 
 	{
-		globals.dir = conf["dir"].getString();
+		globals.dir = conf["outputDir.dir"].getString();
 		strcpy(globals.fname, globals.dir.c_str());
 	}
 
-	if (conf["saveQueue"].getBoolean() && config::saveQueue)
+	if (conf["queue.saveQueue"].getBoolean() && config::saveQueue)
 	{
-		std::string str = conf["queue"].getString();
+		std::string str = conf["queue.queueList"].getString();
 		char* point;
 		point = strtok((char*)str.c_str(), ";");
 

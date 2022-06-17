@@ -15,6 +15,11 @@ namespace ui {
 	inline std::string temp;
 	inline bool argsOpen = false;
 	inline bool configOpen = false;
+	inline bool sourceOpen = false;
+	inline bool errorOpen = false;
+	inline bool pngOpen = false;
+	inline bool pngSettings = false;
+	inline std::string errorStr;
 	inline ImVec4 text;
 }
 

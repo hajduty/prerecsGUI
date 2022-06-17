@@ -8,14 +8,17 @@ public:
 	bool active = true;
 	bool stopEncode = false;
 	bool start = true;
+	bool toVideo = false;
 	int startOption = 3;
+	int pngFramerate = 600;
+	int selectedDigits = 4;
 	char fname[128];
-	char argsDisplay[128];
+	char argsDisplay[256];
 
 	std::vector<std::string> locations = {};
 	std::vector<std::string> locationsDisplay = {};
 	std::vector<std::string> cnsl = {};
-
+	std::string pngNumber = "%07d";
 	std::string startBtn = "START";
 	std::string codec = "xvid";
 	std::string appdata;
@@ -26,6 +29,7 @@ public:
 
 	ImGui::FileBrowser fileDialog = ImGui::FileBrowser(ImGuiFileBrowserFlags_MultipleSelection);
 	ImGui::FileBrowser folderDialog = ImGui::FileBrowser(ImGuiFileBrowserFlags_SelectDirectory | ImGuiFileBrowserFlags_MultipleSelection);
+	ImGui::FileBrowser pngDialog = ImGui::FileBrowser();
 
 	ImFont* arialBig;
 	ImFont* arialMedium;
@@ -35,3 +39,5 @@ public:
 };
 
 inline c_globals globals;
+
+inline static const char* items[5] = { "%03d", "%04d", "%05d", "%06d", "%07d" };

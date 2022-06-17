@@ -11,7 +11,7 @@ void ModernDarkTheme()
 	style.TabRounding = 2;
 	style.WindowRounding = 0;
 	style.FramePadding = { 4, 4 };
-	style.WindowPadding = { 0,0 };
+	style.WindowPadding = { 8,8 };
 	style.ScrollbarSize = 12;
 
 	style.WindowTitleAlign = { 0.0, 0.5 };
@@ -20,7 +20,7 @@ void ModernDarkTheme()
 	ImVec4* colors = ImGui::GetStyle().Colors;
 	colors[ImGuiCol_Text] = { 1.0f, 1.0f, 1.0f, 1.00f };				//
 	colors[ImGuiCol_TextDisabled] = { 0.25f, 0.25f, 0.25f, 1.00f };		//
-	colors[ImGuiCol_WindowBg] = { 0.09f, 0.09f, 0.09f, 1.f };			//
+	colors[ImGuiCol_WindowBg] = { 0.085f, 0.085f, 0.085f, 1.f };		//
 	colors[ImGuiCol_ChildBg] = { 0.11f, 0.11f, 0.11f, 1.00f };			//
 	colors[ImGuiCol_PopupBg] = { 0.11f, 0.11f, 0.11f, 1.f };			//
 	colors[ImGuiCol_Border] = { 0.07f, 0.08f, 0.08f, 1.00f };
@@ -29,7 +29,7 @@ void ModernDarkTheme()
 	colors[ImGuiCol_FrameBgHovered] = { 0.31f, 0.29f, 0.27f, 1.00f };
 	colors[ImGuiCol_FrameBgActive] = { 0.40f, 0.36f, 0.33f, 0.67f };
 	colors[ImGuiCol_TitleBg] = { 0.13f, 0.13f, 0.13f, 1.00f };
-	colors[ImGuiCol_TitleBgActive] = { 0.13f, 0.13f, 0.13f, 1.00f };		//
+	colors[ImGuiCol_TitleBgActive] = { 0.13f, 0.13f, 0.13f, 1.00f };	//
 	colors[ImGuiCol_TitleBgCollapsed] = { 0.0f, 0.0f, 0.0f, 0.61f };
 	colors[ImGuiCol_MenuBarBg] = { 0.18f, 0.18f, 0.18f, 0.94f };		//
 	colors[ImGuiCol_ScrollbarBg] = { 0.00f, 0.00f, 0.00f, 0.16f };
@@ -37,8 +37,8 @@ void ModernDarkTheme()
 	colors[ImGuiCol_ScrollbarGrabHovered] = { 0.31f, 0.29f, 0.27f, 1.00f };
 	colors[ImGuiCol_ScrollbarGrabActive] = { 0.40f, 0.36f, 0.33f, 1.00f };
 	colors[ImGuiCol_CheckMark] = ImVec4(0.98f, 0.26f, 0.26f, 1.00f);
-	colors[ImGuiCol_SliderGrab] = { 0.8f, 0.8f, 0.8f, 1.0f };			//		
-	colors[ImGuiCol_SliderGrabActive] = { 0.55f, 0.55f, 0.55f, 1.00f }; //
+	colors[ImGuiCol_SliderGrab] = { 0.8f, 0.25f, 0.25f, 1.0f };			//		
+	colors[ImGuiCol_SliderGrabActive] = { 1.f, 0.25f, 0.25f, 1.00f }; //
 	colors[ImGuiCol_Button] = { 0.55f, 0.55f, 0.55f, 0.00f };			//
 	colors[ImGuiCol_ButtonHovered] = { 0.15f, 0.15f, 0.15f, 1.f };	//	
 	colors[ImGuiCol_ButtonActive] = { 0.60f, 0.60f, 0.60f, 1.00f };		//

@@ -5,7 +5,6 @@
 #include "font/IconsForkAwesome.h"
 #include "font/forkawesome-webfont.h"
 
-
 int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
     // Create application window
@@ -29,10 +28,13 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
     // (optional) set browser properties
     globals.fileDialog.SetTitle("Select files");
-    globals.fileDialog.SetTypeFilters({ ".mp4", ".mp4" });
+    globals.fileDialog.SetTypeFilters({ ".avi" , ".mp4", ".png", ".tga" ,".mov"});
 
     globals.folderDialog.SetTitle("Select files");
     globals.folderDialog.SetTypeFilters({ "" });
+
+    globals.pngDialog.SetTitle("Select start frame");
+    globals.pngDialog.SetTypeFilters({ ".png" , ".tga"});
 
     ImGuiIO& io = ImGui::GetIO();
     io.IniFilename = nullptr; //crutial for not leaving the imgui.ini file

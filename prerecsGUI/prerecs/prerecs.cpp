@@ -64,6 +64,7 @@ void prerecs::startEncode()
     for (int i = 0; i < globals.locations.size(); i++)
     {
         std::string base_filename = globals.locations[i].substr(globals.locations[i].find_last_of("/\\") + 1);
+        std::string stringPath = globals.locations.at(i);
         std::string temp = globals.locationsDisplay.at(i);
         std::filesystem::path p = base_filename;
 
@@ -77,37 +78,73 @@ void prerecs::startEncode()
         if (globals.locationsDisplay[i].find("Finished") != std::string::npos)
             continue;
 
-        if (globals.codec == "png" | globals.codec == "tga")
+        if (globals.codec == "png" || globals.codec == "tga" && !globals.toVideo)
         {
             if (!globals.fname[0] == '\0') // If output path is empty, output in a new folder in source directory
             {
-                std::string pngPath = globals.convdir + "\\" + p.replace_extension().u8string();
+                std::string pngPath = globals.convdir + "\\" + p.replace_extension().string();
                 _mkdir(pngPath.c_str());
-                cmd = "ffmpeg -i \"" + globals.locations[i] + globals.args + pngPath + "\\" + globals.codec + "_" + p.replace_extension().u8string() + globals.filetype + "\" 2>&1";
+                cmd = "ffmpeg -i \"" + globals.locations[i] + globals.args + pngPath + "\\" + globals.codec + "_" + p.replace_extension().string() + globals.filetype + "\" 2>&1";
             }
             else 
             {
                 std::filesystem::path sp = globals.locations[i];
-                std::string sourcePath = sp.replace_extension().u8string();
+                
+                std::string sourcePath = sp.replace_extension().string();
                 std::cout << "\n" << sourcePath << "\n";
                 _mkdir(sourcePath.c_str());
-                cmd = "ffmpeg -i \"" + globals.locations[i] + globals.args + sourcePath + "\\" + globals.codec + "_" + p.replace_extension().u8string() + globals.filetype + "\" 2>&1";
+                cmd = "ffmpeg -i \"" + globals.locations[i] + globals.args + sourcePath + "\\" + globals.codec + "_" + p.replace_extension().string() + globals.filetype + "\" 2>&1";
             }
         }
         else 
         {
             if (!globals.fname[0] == '\0')
             {
-                cmd = "ffmpeg -i \"" + globals.locations[i] + globals.args + globals.convdir + "\\" + globals.codec + "_" + p.replace_extension().u8string() + globals.filetype + "\" 2>&1";
+                cmd = "ffmpeg -i \"" + globals.locations[i] + globals.args + globals.convdir + "\\" + globals.codec + "_" + p.replace_extension().string() + globals.filetype + "\" 2>&1";
             }
             else
             {
                 std::filesystem::path sp = globals.locations[i];
-                std::string sourcePath = sp.replace_extension().u8string();
+                std::string sourcePath = sp.replace_extension().string();
                 _mkdir(sourcePath.c_str());
-                cmd = "ffmpeg -i \"" + globals.locations[i] + globals.args + sourcePath + "\\" + globals.codec + "_" + p.replace_extension().u8string() + globals.filetype + "\" 2>&1";
+                cmd = "ffmpeg -i \"" + globals.locations[i] + globals.args + sourcePath + "\\" + globals.codec + "_" + p.replace_extension().string() + globals.filetype + "\" 2>&1";
             }
         }
+        if (globals.toVideo)
+        {
+            std::string last = base_filename.substr(base_filename.find_last_of("_") + 1);
+            std::string startNumber = last.substr(0,last.find_last_of("."));
+            std::string start = "-start_number " + startNumber;
+            std::string framerate = " -framerate " + std::to_string(globals.pngFramerate) + " ";
+
+            globals.pngNumber = items[globals.selectedDigits];
+
+            //std::cout << "start: " << start << "\n";
+            //std::cout << "last: " << last << "\n";
+            
+            std::string filetype = base_filename.substr(base_filename.find_last_of("."));
+            std::string name = " -i \"" + stringPath.substr(0, stringPath.find_last_of("_") + 1) + globals.pngNumber + filetype + "\"";
+
+            //std::cout << "name: " << name << "\n";
+            //std::cout << "\n" << "name :" << name << "\n";
+            //std::cout << "\n" << globals.args;
+
+            globals.args = framerate + start + name +  " -c:v mpeg4 -vtag xvid -qscale:v 1 -qscale:a 1 -g 32 -vsync 1 -y \"";
+
+            if (!globals.fname[0] == '\0')
+            {
+                cmd = "ffmpeg" + globals.args + globals.convdir + "\\" + base_filename + ".avi" + "\" 2>&1";
+            }
+            else
+            {
+                std::filesystem::path sp = globals.locations[i];
+                std::string sourcePath = sp.replace_extension().string();
+                _mkdir(sourcePath.c_str());
+
+                cmd = "ffmpeg " + globals.args + base_filename + ".avi" + "\" 2>&1";
+            }
+        }
+        std::cout << "\n" << cmd;
 
         globals.locationsDisplay.at(i) = base_filename + " - Started"; // Change displayname & status
         
